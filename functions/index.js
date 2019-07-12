@@ -16,25 +16,26 @@ function uploadImage(articleId, buffer) {
     bufferStream
       .pipe( file.createWriteStream({ metadata: { contentType: 'image/png' } }))
       .on('error',  (error) => reject(error))
-
-    file.getSignedUrl({action: 'read', expires: '01-01-3000'})
-      .then((url)  => resolve(url))
-      .catch((err) => reject(err));
+      .on('finish', () => {
+        file.getSignedUrl({action: 'read', expires: '01-01-3000'})
+            .then((url)  => resolve(url))
+            .catch((err) => reject(err));
+      })
 
   });
 }
 
 exports.createImage = functions
-                      .runWith({ memory: '1GB' })
+                      .runWith({ memory: '1GB', timeoutSeconds: 120 })
                       .https
                       .onRequest(async (req, res) => {
 
   const q = req.body;
 
-  if (!q.image || !q.title || !q.description) {
+  if (!q.image || !q.title || !q.description || !q.articleId) {
     res.json({
       success: false,
-      data: "Missing required parameter: one of image, title, description"
+      data: "Missing required parameter: one of image, title, description, articleId"
     })
   }
   
@@ -52,7 +53,7 @@ exports.createImage = functions
   await browser.close();
 
   try {
-    const imageUrl = await uploadImage("129938123", renderedImage)
+    const imageUrl = await uploadImage(q.articleId, renderedImage)
     res.json({
       success: true,
       data: imageUrl[0]
