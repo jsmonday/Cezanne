@@ -45,7 +45,8 @@ function generateImage(template, data) {
     const render = pug.renderFile(`./src/templates/${templateData.file}.pug`, {
       title: data.title,
       description: data.description,
-      image: data.image
+      image: data.image,
+      number: data.number
     })
 
     try {
