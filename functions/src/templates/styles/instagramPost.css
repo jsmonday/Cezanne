@@ -1,11 +1,14 @@
+html {
+  background:#f5f5f5;
+}
+
 body {
   display: flex;
   margin: 0;
   padding: 0;
-  width: 1920px;
+  width: 1080px;
   height: 1080px;
   background: #000;
-  background-image: url("{{ image }}");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -16,14 +19,14 @@ body {
   display: flex;
   margin: 0;
   padding: 0;
-  width: 1920px;
+  width: 1080px;
   height: 1080px;
   background: linear-gradient(360deg, #000000 0%, rgba(45, 78, 88, 0) 100%);
 }
 
 .data {
   color: #fff;
-  align-self: flex-end;
+  align-self: center;
   width: 100vw;
   padding: 100px;
   padding-bottom: 110px;
@@ -37,7 +40,7 @@ h1 {
 }
 
 p {
-  font-size: 36px;
+  font-size: 28px;
   margin: 0;
 }
 
