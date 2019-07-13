@@ -1,0 +1,56 @@
+html {
+  background:#f5f5f5;
+}
+
+body {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  width: 1080px;
+  height: 1920px;
+  background: #000;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  font-family: 'Roboto', sans-serif;
+}
+
+.shade {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  width: 1080px;
+  height: 1920px;
+  background: linear-gradient(360deg, #000000 0%, rgba(45, 78, 88, 0) 100%);
+}
+
+.data {
+  color: #fff;
+  align-self: center;
+  width: 100vw;
+  padding: 100px;
+  padding-bottom: 110px;
+}
+
+h1 {
+  font-size: 78px;
+  line-height: 72px;
+  margin: 0;
+  margin-bottom: 20px;
+}
+
+p {
+  font-size: 28px;
+  margin: 0;
+}
+
+hr {
+  border: #fff solid 1px;
+  margin-bottom: 25px;
+}
+
+.jsm {
+  margin-bottom: 25px;
+  font-size: 32px;
+  font-weight: bold;
+}

@@ -12,4 +12,5 @@ app.set("view engine", "pug")
   .set("views", `${__dirname}/templates`)
   .get("/openGraph", (_, res) => res.render("ogImage.pug", testData))
   .get("/instagram/post", (_, res) => res.render("instagramPost", testData))
+  .get("/instagram/story", (_, res) => res.render("instagramStory", testData))
   .listen(port, () => console.log(`Devserver live on http://localhost:${port}`));
