@@ -76,6 +76,7 @@ function generateImage(template, data) {
       });
 
     } catch (err) {
+      /* eslint-disable prefer-promise-reject-errors */
       reject({
         success: false,
         data: err
