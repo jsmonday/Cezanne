@@ -16,6 +16,7 @@ At the moment, SIGF supports the following image formats:
 - Title
 - Description
 - Image
+- Template
 - Number (optional) 
 
 # License

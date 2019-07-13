@@ -89,7 +89,7 @@ function generateImage(template, data) {
 exports.createImage = functions
   .runWith({ memory: '1GB', timeoutSeconds: 120 })
   .https
-  .onRequest((req, res) => {
+  .onRequest(async (req, res) => {
 
     const q = req.body;
 
@@ -100,7 +100,7 @@ exports.createImage = functions
       })
     }
 
-    const validTemplates = ["instagramPost", "instagramStory", "ogImage"];
+    const validTemplates = ["instagramPost", "instagramStory", "ogImage", "all"];
 
     if (!validTemplates.includes(q.template)) {
       res.json({
@@ -109,8 +109,38 @@ exports.createImage = functions
       })
     }
 
-    generateImage(q.template, q)
-      .then((result) => res.json(result))
-      .catch((err) => res.json(err))
+    if (q.template === "all") {
+
+      try {
+
+        const ogImage = await generateImage("ogImage", q);
+        const igPost = await generateImage("instagramPost", q);
+        const igStory = await generateImage("instagramStory", q);
+
+        res.json({
+          success: true,
+          data: {
+            openGraph: ogImage.data,
+            instagram: {
+              story: igStory.data,
+              post: igPost.data
+            }
+          }
+        })
+
+      } catch (err) {
+        res.json({
+          success: false,
+          data: err
+        })
+      }
+
+    } else {
+
+      generateImage(q.template, q)
+        .then((result) => res.json(result))
+        .catch((err) => res.json(err))
+
+    }
 
   });
