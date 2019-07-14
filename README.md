@@ -18,7 +18,35 @@ At the moment, SIGF supports the following image formats:
 - Description
 - Image
 - Template
-- Number (optional) 
+- Number (optional)
+
+# Example Call
+
+`POST /my/lambda/endpoint`
+
+```json
+{
+  "title": "My Awesome Title",
+  "description": "Here it is the description",
+  "image": "https://url/to/image",
+  "template": "all"
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": "true",
+  "data": {
+    "openGraph": "image-link",
+    "instagram": {
+      "story": "image-link",
+      "post": "image-link"
+    }
+  }
+}
+```
 
 # License
 [Unlicense](/LICENSE.md)
