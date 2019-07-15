@@ -113,9 +113,14 @@ exports.createImage = functions
 
       try {
 
-        const ogImage = await generateImage("ogImage", q);
-        const igPost = await generateImage("instagramPost", q);
-        const igStory = await generateImage("instagramStory", q);
+        const [ 
+            ogImage
+          , igPost
+          , igStory ] = await Promise.all([
+            generateImage("ogImage", q)
+          , generateImage("instagramPost", q)
+          , generateImage("instagramStory", q)
+        ]);
 
         res.json({
           success: true,
