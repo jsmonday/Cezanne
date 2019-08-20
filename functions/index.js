@@ -1,27 +1,40 @@
-const pug = require("pug");
-const stream = require("stream");
+const pug       = require("pug");
+const stream    = require("stream");
 const puppeteer = require("puppeteer");
 const functions = require('firebase-functions');
-const firebase = require("./src/firebase/storage");
-const strapi   = require("./src/strapi");
+const uuidv4    = require('uuid/v4');
+const firebase  = require("./src/firebase/storage");
+const strapi    = require("./src/strapi");
+                  require("dotenv").config();
 
 function uploadImage(articleId, imageName, buffer) {
   return new Promise((resolve, reject) => {
 
     const bufferStream = new stream.PassThrough();
+    const uuid = uuidv4();
+
     bufferStream.end(buffer);
 
     const bucket = firebase.storage().bucket();
     const file = bucket.file(`/articles/${articleId}/cezanne/${imageName}.jpg`);
 
+    const options = {
+      destination: `/articles/${articleId}/cezanne/${imageName}.jpg`,
+      contentType: 'image/jpg',
+      metadata: {
+        metadata: {
+          firebaseStorageDownloadTokens: uuid,
+        }
+      }
+    }
+
     bufferStream
-      .pipe(file.createWriteStream({ metadata: { contentType: 'image/png' } }))
+      .pipe(file.createWriteStream(options))
       .on('error', (error) => reject(error))
       .on('finish', () => {
-        file.getSignedUrl({ action: 'read', expires: '01-01-3000' })
-          .then((url) => resolve(url))
-          .catch((err) => reject(err));
-      })
+        const downloadUrl = `${process.env.IMAGE_BASEURL}${articleId}%2Fcezanne%2F${imageName}.jpg?alt=media&token=${uuid}`
+        resolve(downloadUrl);
+      });
 
   });
 }
@@ -71,10 +84,10 @@ function generateImage(template, data) {
       const renderedImage = await page.screenshot();
       await browser.close();
 
-      const imageUrl = await uploadImage(data.articleId, templateData.file, renderedImage)
+      const imageUrl = await uploadImage(data.id, templateData.file, renderedImage)
       resolve({
         success: true,
-        data: imageUrl[0]
+        data: imageUrl
       });
 
     } catch (err) {
@@ -105,15 +118,18 @@ exports.createImage = functions
     try {
 
       const articleData = await strapi.getArticleById(q.id);
-
+      
       const [ 
-          ogImage
+        ogImage
         , igPost
         , igStory ] = await Promise.all([
-          generateImage("ogImage",        articleData)
-        , generateImage("instagramPost",  articleData)
-        , generateImage("instagramStory", articleData)
-      ]);
+            generateImage("ogImage",        articleData)
+          , generateImage("instagramPost",  articleData)
+          , generateImage("instagramStory", articleData)
+        ]);
+
+      const jwt = await strapi.getJWT();
+      await strapi.updateOgGraphUrl(jwt, q.id, ogImage.data);
 
       res.json({
         success: true,
