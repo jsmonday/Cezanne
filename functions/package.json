@@ -23,8 +23,7 @@
     "pug": "^2.0.4",
     "puppeteer": "1.18.1",
     "strapi-sdk-javascript": "^0.3.1",
-    "uuid": "^3.3.3",
-    "uuidv4": "^4.0.0"
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "eslint": "^5.12.0",
