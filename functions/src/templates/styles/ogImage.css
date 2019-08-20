@@ -40,6 +40,28 @@ body {
   box-sizing: border-box;
 }
 
+.logo {
+  position: absolute;
+  top: 0;
+  left: 5%;
+  top: 7%;
+}
+
+.logo img {
+  float: left;
+  width: 100px;
+}
+
+.logo .logo-text {
+  float: left;
+  color: #fff;
+  font-weight: 900;
+  font-size: 52px;
+  margin-left: 20px;
+  transform: translateY(25px);
+  text-shadow: 0px 0px 30px rgba(0, 0, 0, 1);
+}
+
 .push-bottom {
   width: 100%;
 }
@@ -49,7 +71,7 @@ body {
   padding: 25px;
   border-radius: 25px;
   width: auto;
-  margin-left: calc(5% / 2);
+  margin-left: 5%;
   margin-bottom: 25px;
   color: #413f43;
   background: #fff;
@@ -84,8 +106,8 @@ body {
 .article-data {
   background: #ffffff;
   margin: auto;
-  margin-bottom: 40px;
-  width: 95%;
+  margin-bottom: 5%;
+  width: 90%;
   border-radius: 25px;
   padding: 50px;
   box-sizing: border-box;
