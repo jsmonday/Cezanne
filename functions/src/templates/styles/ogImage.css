@@ -9,27 +9,87 @@ body {
   width: 1920px;
   height: 1080px;
   background: #000;
+  color: #413f43;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Raleway', sans-serif;
 }
 
 .shade {
   display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 0;
   padding: 0;
   width: 1920px;
   height: 1080px;
-  background: linear-gradient(360deg, #000000 0%, rgba(45, 78, 88, 0) 100%);
+  background: linear-gradient(221.63deg, #5545F9 0%, rgba(115, 103, 240, 0.85) 50%);
 }
 
-.data {
-  color: #fff;
-  align-self: flex-end;
-  width: 100vw;
-  padding: 100px;
-  padding-bottom: 110px;
+.article-image {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  flex-direction: column;
+  width: 1920px;
+  height: 1080px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0px 0px 60px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+}
+
+.push-bottom {
+  width: 100%;
+}
+
+.author-data {
+  display: inline-block;
+  padding: 25px;
+  border-radius: 25px;
+  width: auto;
+  margin-left: calc(5% / 2);
+  margin-bottom: 25px;
+  color: #413f43;
+  background: #fff;
+}
+
+.author-data img {
+  float: left;
+  border-radius: 100%;
+  width: 100px;
+  box-shadow: 0px 0px 60px rgba(0, 0, 0, 0.25);
+}
+
+.author-data .author {
+  float: left;
+  margin-left: 25px;
+}
+
+.author-data .author .name {
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 56px;
+  margin: 0;
+}
+
+.author-data .author .desc {
+  font-size: 32px;
+  margin: 0;
+  margin-top: -5px;
+  color: rgba(115, 103, 240, 1);
+}
+
+.article-data {
+  background: #ffffff;
+  margin: auto;
+  margin-bottom: 40px;
+  width: 95%;
+  border-radius: 25px;
+  padding: 50px;
+  box-sizing: border-box;
+  box-shadow: 0px 0px 60px rgba(0, 0, 0, 0.25);
 }
 
 h1 {
@@ -37,6 +97,8 @@ h1 {
   line-height: 72px;
   margin: 0;
   margin-bottom: 20px;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 p {
@@ -47,10 +109,4 @@ p {
 hr {
   border: #fff solid 1px;
   margin-bottom: 25px;
-}
-
-.jsm {
-  margin-bottom: 25px;
-  font-size: 32px;
-  font-weight: bold;
 }

@@ -3,6 +3,7 @@ const stream = require("stream");
 const puppeteer = require("puppeteer");
 const functions = require('firebase-functions');
 const firebase = require("./src/firebase/storage");
+const strapi   = require("./src/strapi");
 
 function uploadImage(articleId, imageName, buffer) {
   return new Promise((resolve, reject) => {
@@ -11,7 +12,7 @@ function uploadImage(articleId, imageName, buffer) {
     bufferStream.end(buffer);
 
     const bucket = firebase.storage().bucket();
-    const file = bucket.file(`/articles/${articleId}/${imageName}.jpg`);
+    const file = bucket.file(`/articles/${articleId}/cezanne/${imageName}.jpg`);
 
     bufferStream
       .pipe(file.createWriteStream({ metadata: { contentType: 'image/png' } }))
@@ -43,10 +44,11 @@ function generateImage(template, data) {
     }
 
     const render = pug.renderFile(`./src/templates/${templateData.file}.pug`, {
-      title: data.title,
+      title:       data.title,
       description: data.description,
-      image: data.image,
-      number: data.number
+      image:       data.image,
+      number:      data.number,
+      author:      data.author
     })
 
     try {
@@ -93,59 +95,42 @@ exports.createImage = functions
 
     const q = req.body;
 
-    if (!q.image || !q.title || !q.description || !q.articleId || !q.template) {
+    if (!q.id ) {
       res.json({
         success: false,
-        data: "Missing required parameter: one of image, title, description, articleId, template"
+        data: "Missing required parameter: id"
       })
     }
 
-    const validTemplates = ["instagramPost", "instagramStory", "ogImage", "all"];
+    try {
 
-    if (!validTemplates.includes(q.template)) {
+      const articleData = await strapi.getArticleById(q.id);
+
+      const [ 
+          ogImage
+        , igPost
+        , igStory ] = await Promise.all([
+          generateImage("ogImage",        articleData)
+        , generateImage("instagramPost",  articleData)
+        , generateImage("instagramStory", articleData)
+      ]);
+
       res.json({
-        success: false,
-        data: `${q.template} is not a valid template name. Must be one of: ${validTemplates.join(", ")}`
-      })
-    }
-
-    if (q.template === "all") {
-
-      try {
-
-        const [ 
-            ogImage
-          , igPost
-          , igStory ] = await Promise.all([
-            generateImage("ogImage", q)
-          , generateImage("instagramPost", q)
-          , generateImage("instagramStory", q)
-        ]);
-
-        res.json({
-          success: true,
-          data: {
-            openGraph: ogImage.data,
-            instagram: {
-              story: igStory.data,
-              post: igPost.data
-            }
+        success: true,
+        data: {
+          openGraph: ogImage.data,
+          instagram: {
+            story: igStory.data,
+            post: igPost.data
           }
-        })
+        }
+      })
 
-      } catch (err) {
-        res.json({
-          success: false,
-          data: err
-        })
-      }
-
-    } else {
-
-      generateImage(q.template, q)
-        .then((result) => res.json(result))
-        .catch((err) => res.json(err))
-
+    } catch (err) {
+      res.json({
+        success: false,
+        data: err
+      })
     }
 
   });

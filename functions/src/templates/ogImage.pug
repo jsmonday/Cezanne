@@ -5,8 +5,13 @@ block style
 
 block template
   .shade
-    .data
-      .jsm JSMONDAY #{number || ''}
-      hr
-      h1 #{title}
-      p  #{description}
+    .article-image(style="background-image: url(" + image + ")")
+      .push-bottom
+        .author-data
+          img(src=author.img)
+          .author
+            .name #{author.name}
+            .desc #{author.desc}
+        .article-data
+          h1 #{title}
+          p  #{description}

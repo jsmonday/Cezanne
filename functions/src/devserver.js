@@ -5,7 +5,12 @@ const port = 3150;
 const testData = {
   title: "Functional Sentiment Analysis in JavaScript",
   description: "Writing a sentiment analyzer in modern and functional JavaScript using the AFINN dictionary, with an eye on clean code.",
-  image: "https://images.unsplash.com/photo-1560092680-9a49173d6a4b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80"
+  image: "https://firebasestorage.googleapis.com/v0/b/jsmonday-cms.appspot.com/o/articles%2F25%2Fcover.jpeg?alt=media&token=3b5bf48a-d20f-4e4b-af46-4adb57ae90d5",
+  author: {
+    name: "Michele Riva",
+    desc: "Senior Software Engineer",
+    img: "https://firebasestorage.googleapis.com/v0/b/jsmonday-cms.appspot.com/o/authors%2F1%2Fprofileimage.jpg?alt=media&token=249b03d1-4328-4b61-837f-a2d4205cd813"
+  }
 };
 
 app.set("view engine", "pug")
