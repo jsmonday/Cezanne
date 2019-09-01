@@ -1,6 +1,6 @@
 #! /bin/bash
 
-for i in {1..28}
+for i in {1..30}
 do
   echo "making request $i"
   curl --request POST \

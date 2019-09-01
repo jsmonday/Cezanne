@@ -5,8 +5,10 @@ block style
 
 block template
   .shade
-    .data
-      .jsm JSMONDAY #{number || ''}
-      hr
-      h1 #{title}
-      p  #{description}
+    .data(style="background-image: url(" + image + ")")
+      .article-data
+        .author
+          img(src="https://firebasestorage.googleapis.com/v0/b/jsmonday-cms.appspot.com/o/misc%2Flogo%2Fplain_logo.svg?alt=media&token=f77c2e67-0a00-4e82-bd8a-204de6662239")
+          .name JSMonday
+        .article-title
+          h1 #{title}

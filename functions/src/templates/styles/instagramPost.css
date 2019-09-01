@@ -1,5 +1,6 @@
 html {
   background:#f5f5f5;
+  color: #413f43;
 }
 
 body {
@@ -12,7 +13,7 @@ body {
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Raleway', sans-serif;
 }
 
 .shade {
@@ -21,36 +22,60 @@ body {
   padding: 0;
   width: 1080px;
   height: 1080px;
-  background: linear-gradient(360deg, #000000 0%, rgba(45, 78, 88, 0) 100%);
+  background: linear-gradient(240.64deg, #5545F9 0%, rgba(115, 103, 240, 0.85) 50%);
 }
 
 .data {
-  color: #fff;
-  align-self: center;
-  width: 100vw;
-  padding: 100px;
-  padding-bottom: 110px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 90vw;
+  height: 90vh;
+  margin-left: 5vw;
+  margin-top: 5vh;
+  background: #fff;
+  border-radius: 25px;
+  box-shadow: 0px 0px 60px rgba(0, 0, 0, 0.25);
+  background-size: cover;
+  background-position: center;
+}
+
+.article-title {
+  background: #fff;
+  width: 90%;
+  margin-bottom: 5%;
+  margin-left: 5%;
+  padding: 25px;
+  box-sizing: border-box;
+  border-radius: 15px;
+  box-shadow: 0px 0px 60px rgba(0, 0, 0, 0.5);
 }
 
 h1 {
-  font-size: 78px;
+  font-size: 76px;
   line-height: 72px;
   margin: 0;
-  margin-bottom: 20px;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
-p {
-  font-size: 28px;
-  margin: 0;
-}
-
-hr {
-  border: #fff solid 1px;
+.author {
+  display: flex;
+  border-radius: 15px;
   margin-bottom: 25px;
+  margin-left: 5%;
+  width: 90%;
 }
 
-.jsm {
-  margin-bottom: 25px;
+.author img {
+  max-width: 80px;
+}
+
+.author .name {
   font-size: 32px;
-  font-weight: bold;
+  font-weight: 900;
+  margin-left: 15px;
+  color: #fff;
+  transform: translateY(25px);
+  text-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
 }
