@@ -1,5 +1,7 @@
 <img src="/docs/sigf.png" align="center" width="100%" />
 <br /> <br />
+<img src="https://opencollective.com/jsmondaydev/tiers/sponsor/badge.svg?label=sponsor&color=brightgreen" />
+<br /> <br />
 
 SIGF is a simple and powerful service that uses **Puppeteer** in order to generate the OpenGraph image for every JSMonday article. <br />
 It's build to work on **Google Cloud Functions**, whose Linux distribution is way better than AWS one (and that solves a lot of common problems).
