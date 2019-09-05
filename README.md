@@ -1,6 +1,6 @@
 <img src="/docs/sigf.png" align="center" width="100%" />
 <br />
-<img src="https://opencollective.com/jsmondaydev/tiers/sponsor/badge.svg?label=sponsor&color=brightgreen" />
+<img src="https://opencollective.com/jsmonday/tiers/sponsor/badge.svg?label=sponsor&color=brightgreen" />
 <object type="image/svg+xml" data="https://opencollective.com/jsmondaydev/tiers/sponsor.svg?avatarHeight=36&width=600"></object>
 <br />
 
