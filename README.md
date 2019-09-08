@@ -1,7 +1,8 @@
 <img src="/docs/sigf.png" align="center" width="100%" />
 <br />
-<img src="https://opencollective.com/jsmonday/tiers/sponsor/badge.svg?label=sponsor&color=brightgreen" />
-<object type="image/svg+xml" data="https://opencollective.com/jsmondaydev/tiers/sponsor.svg?avatarHeight=36&width=600"></object>
+<a href="https://opencollective.com/jsmonday" target="_blank">
+  <img src="https://opencollective.com/jsmonday/tiers/one-shot-donation.svg?avatarHeight=60&width=600" />
+</a>
 <br />
 
 SIGF is a simple and powerful service that uses **Puppeteer** in order to generate the OpenGraph image for every JSMonday article. <br />
