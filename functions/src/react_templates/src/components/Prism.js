@@ -3,27 +3,35 @@ import Prism from 'prismjs';
 
 import './Prism.scss';
 
-const code = `const isNumber = (str) => /\d/g.test(str);
-
-// Is equivalent to
-
-function isNumber(str) {
-  const re = new RegExp("\\d", "g");
-  return re.test(str);
-};
-`;
-
 export default class PrismCode extends React.PureComponent {
+
+  constructor() {
+    super();
+
+    this.state = {
+      code: null,
+      lang: null
+    }
+  }
 
   componentDidMount() {
     Prism.highlightAll()
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const code     = urlParams.get('code');
+    const language = urlParams.get('lang')
+    
+    this.setState({
+      code:     atob(code),
+      language
+    })
   }
 
   render() {
     return (
       <pre className="line-numbers">
-        <code className="language-js">
-          {code}
+        <code className={`language-${this.state.language}`}>
+          { this.state.code }
         </code>
       </pre>
     )
