@@ -3,7 +3,7 @@ import Instagram  from '../styled/Instagram';
 import Browser    from '../styled/Browser';
 import Prism      from '../components/Prism';
 
-const Post = () => (
+const Snippet = () => (
   <Instagram.Post>
     <Instagram.InnerPost>
       <Browser.Window>
@@ -14,5 +14,7 @@ const Post = () => (
 );
 
 export default {
-  Post
+  post: {
+    Snippet
+  }
 }
