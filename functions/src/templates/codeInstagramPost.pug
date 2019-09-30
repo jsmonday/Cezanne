@@ -1,0 +1,11 @@
+extends ./commons/template.pug
+
+block style
+  include ./styles/codeInstagramPost.css
+
+block template
+  include ./commons/codemirror.pug
+  .shade
+    .data
+      .article-data
+      script(src="./scripts/codemirror.js")

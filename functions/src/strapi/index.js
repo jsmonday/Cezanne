@@ -47,7 +47,8 @@ async function getSnippetById(id) {
 
     return {
       id,
-      code: data.code
+      code: data.code,
+      lang: data.language
     }
 
   } catch (err) {

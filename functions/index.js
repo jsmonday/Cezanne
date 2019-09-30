@@ -1,4 +1,3 @@
-const pug       = require("pug");
 const stream    = require("stream");
 const puppeteer = require("puppeteer");
 const functions = require('firebase-functions');
@@ -7,7 +6,23 @@ const firebase  = require("./src/firebase/storage");
 const strapi    = require("./src/strapi");
                   require("dotenv").config();
 
-function uploadImage(articleId, imageName, buffer) {
+function uploadImage(id, template, target, buffer) {
+
+  let fileName;
+
+  let collection = () => {
+    if (target === 'instagram') {
+      if (template === 'snippet') return { fileName: 'instagramPost', collection: 'snippets' };
+      if (template === 'article') return { fileName: 'instagramPost', collection: 'articles' };
+    }
+
+    else if (target === 'opengraph') {
+      if (template === 'snippet') return { fileName: 'ogImage', collection: 'snippets' };
+      if (template === 'article') return { fileName: 'ogImage', collection: 'articles' };
+    }
+
+  }
+
   return new Promise((resolve, reject) => {
 
     const bufferStream = new stream.PassThrough();
@@ -16,10 +31,10 @@ function uploadImage(articleId, imageName, buffer) {
     bufferStream.end(buffer);
 
     const bucket = firebase.storage().bucket();
-    const file = bucket.file(`/articles/${articleId}/cezanne/${imageName}.jpg`);
+    const file = bucket.file(`/${collection().collection}/${id}/cezanne/${collection().fileName}.jpg`);
 
     const options = {
-      destination: `/articles/${articleId}/cezanne/${imageName}.jpg`,
+      destination: `/${collection().collection}/${id}/cezanne/${collection().fileName}.jpg`,
       contentType: 'image/jpg',
       metadata: {
         metadata: {
@@ -39,138 +54,138 @@ function uploadImage(articleId, imageName, buffer) {
   });
 }
 
-function generateImage(template, data) {
-
-  return new Promise(async (resolve, reject) => {
-    let templateData;
-
-    switch (template) {
-      case "ogImage":
-        templateData = { file: "ogImage", screenSize: { width: 1920, height: 1080 } };
-        break;
-      case "instagramPost":
-        templateData = { file: "instagramPost", screenSize: { width: 1080, height: 1080 } };
-        break;
-      case "instagramStory":
-        templateData = { file: "instagramStory", screenSize: { width: 1080, height: 1920 } };
-        break;
-    }
-
-    const render = pug.renderFile(`./src/templates/${templateData.file}.pug`, {
-      title:       data.title,
-      description: data.description,
-      image:       data.image,
-      number:      data.number,
-      author:      data.author
-    })
-
-    try {
-
-      const browser = await puppeteer.launch({
-        args: [
-          '--disable-gpu',
-          '--disable-dev-shm-usage',
-          '--disable-setuid-sandbox',
-          '--no-first-run',
-          '--no-sandbox',
-          '--no-zygote',
-          '--single-process'
-        ]
-      });
-      const page = await browser.newPage();
-
-      await page.setViewport({ ...templateData.screenSize });
-      await page.setContent(render);
-      const renderedImage = await page.screenshot();
-      await browser.close();
-
-      const imageUrl = await uploadImage(data.id, templateData.file, renderedImage)
-      resolve({
-        success: true,
-        data: imageUrl
-      });
-
-    } catch (err) {
-      /* eslint-disable prefer-promise-reject-errors */
-      reject({
-        success: false,
-        data: err
-      });
-    }
-  });
-
+function b64(str) {
+  const buff = new Buffer(str);
+  return buff.toString('base64');
 }
 
-exports.createImage = functions
+function computeTemplate(template, target) {
+  let path = [ template ];
+
+  if (target === 'insagram') {
+    path.push('post');
+    path.push(target);
+  }
+
+  else if (target === 'opengraph') {
+    path.push(target);
+  }
+
+  return path.join("/");
+}
+
+function computeViewPort(target) {
+  if (target === 'opengraph') {
+    return { width: 1920, height: 1080 };
+  }
+
+  if (target === 'instagram') {
+    return { width: 1080, height: 1080 };
+  }
+}
+
+function generateImage(template, target, data, params) {
+  return new Promise(async (resolve, reject) => {
+
+    const viewPort = computeViewPort(target);
+    const path     = computeTemplate(template, target);
+    const browser  = await puppeteer.launch({
+      args: [
+        '--disable-gpu',
+        '--disable-dev-shm-usage',
+        '--disable-setuid-sandbox',
+        '--no-first-run',
+        '--no-sandbox',
+        '--no-zygote',
+        '--single-process'
+      ]
+    });
+    const page = await browser.newPage();
+
+    let qs;
+
+    if (target === 'instagram') {
+      if (template === 'snippet') qs = `?code=${data.code}&lang=${data.lang}`;
+      if (template === 'article') qs = `?title=${data.title}&bgImage=${data.image}`;
+    }
+
+    else if (target === 'opengraph') {
+      if (template === 'snippet') qs = `?code=${data.code}&lang=${data.lang}`;
+      if (template === 'article') qs = `?title=${data.title}&bgImage=${data.image}&author=${data.author.name}&authorImg=${data.author.img}`;
+    }
+
+    const fullPath = `file://${__dirname}/src/react_templates/build/index.html/#/${path}${qs}`;
+
+    console.log(`Rendering ${fullPath}`);
+
+    await page.goto(fullPath);
+    await page.setViewport(viewPort);
+
+    const renderedImage = await page.screenshot();
+    await browser.close();
+
+    const imageUrl = await uploadImage(data.id, template, target, renderedImage);
+
+    resolve({
+      success: true,
+      data: imageUrl
+    });
+
+  });
+}
+
+async function getImages(params, target) {
+
+  return new Promise(async (resolve, reject) => {
+  
+    let data;
+
+    if (target === 'article') {
+
+      let remote = await strapi.getArticleById(params.id);
+
+      data = {
+        id:          remote.id,
+        title:       b64(remote.title),
+        description: b64(remote.description),
+        image:       b64(remote.image),
+        author: {
+          name: b64(remote.author.name),
+          desc: b64(remote.author.desc),
+          img:  b64(remote.author.img)
+        }
+      }
+    }
+
+    else if (target === 'snippet') {
+      let remote = await strapi.getSnippetById(params.id);
+
+      data = {
+        id:   remote.id,
+        code: b64(remote.code),
+        lang: remote.lang
+      }
+    }
+
+    const [ opengraph, instagram ] = await Promise.all[ 
+      generateImage('opengraph', target, data, params), 
+      generateImage('instagram', target, data, params)
+    ];
+
+    resolve([ opengraph, instagram ]);
+
+  });
+}
+
+exports.createImages = functions
   .runWith({ memory: '1GB', timeoutSeconds: 120 })
   .https
   .onRequest(async (req, res) => {
 
-    const q = req.body;
+    const q      = req.body;
+    const target = q.target;
 
-    if (q.target === 'article') {
-      try {
-  
-        const articleData = await strapi.getArticleById(q.id);
-  
-        const [ 
-          ogImage
-          , igPost
-          , igStory ] = await Promise.all([
-              generateImage("ogImage",        articleData)
-            , generateImage("instagramPost",  articleData)
-          ]);
-  
-        const jwt = await strapi.getJWT();
-        await strapi.updateOgGraphUrl(jwt, q.id, ogImage.data);
-  
-        res.json({
-          success: true,
-          data: {
-            openGraph: ogImage.data,
-            instagram: {
-              story: igStory.data,
-              post: igPost.data
-            }
-          }
-        })
-  
-      } catch (err) {
-        res.json({
-          success: false,
-          data: err
-        })
-      }
-    }
+    const [ opengraph, instagram ] = await getImages(q, target);
 
-    if (q.target === 'snippet') {
-      try {
-  
-        const snippetData = await strapi.getSnippetById(q.id);
-  
-        const [ image_opengraph, image_instagram_post ] = await Promise.all([
-              generateSnippetImage("ogImage",        snippetData)
-            , generateSnippetImage("instagramPost",  snippetData)
-          ]);
-  
-        const jwt = await strapi.getJWT();
-        await strapi.updateStrapiSnippet(jwt, q.id, { image_instagram_post, image_opengraph });
-  
-        res.json({
-          success: true,
-          data: {
-            image_opengraph,
-            image_instagram_post
-          }
-        })
-  
-      } catch (err) {
-        res.json({
-          success: false,
-          data: err
-        })
-      }
-    }
-
-
+    res.json([ opengraph, instagram ]);
   });
