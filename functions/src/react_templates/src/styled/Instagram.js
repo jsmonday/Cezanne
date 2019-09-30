@@ -4,6 +4,11 @@ import images from '../misc/snippetImage'
 
 const randomBgImage = images[Math.floor(Math.random() * images.length)];
 
+const computeBackground = (props) => {
+  if (!!props.randomBg) return `url(${randomBgImage});`
+  if (!!props.bgImage)  return `url(${props.bgImage});`
+}
+ 
 export const InnerPost = (styled.div`
   width:  100%;
   height: 100%;
@@ -12,7 +17,7 @@ export const InnerPost = (styled.div`
   box-shadow:          ${boxShadow.default};
   box-sizing:          border-box;
   padding:             40px;
-  background-image:    url(${randomBgImage});
+  background-image:    ${props => computeBackground(props)};
   background-size:     cover;
   background-position: center;
 

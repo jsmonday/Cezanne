@@ -20,9 +20,9 @@ export default class PrismCode extends React.PureComponent {
     const urlParams = new URLSearchParams(window.location.search);
     const code     = urlParams.get('code');
     const language = urlParams.get('lang')
-    
+
     this.setState({
-      code:     atob(code),
+      code: atob(code),
       language
     })
   }

@@ -1,0 +1,32 @@
+.author-box {
+  display: flex;
+  margin-top: 40px;
+  color: #fff;
+  width: 100%;
+
+  .center-txt {
+    transform: translateY(8px);
+  }
+
+  img {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 100%;
+    box-shadow: #0000005c 0px 0px 14px 3px;
+  }
+
+  h2 {
+    font-size: 48px;
+    font-weight: 900;
+    margin: 0;
+    margin-left: 24px;
+    text-shadow: #0000005c 0px 0px 14px 3px;
+  }
+  
+  h3 {
+    margin: 0;
+    font-size: 36px;
+    margin-left: 24px;
+    text-shadow: #0000005c 0px 0px 14px 3px;
+  }
+}

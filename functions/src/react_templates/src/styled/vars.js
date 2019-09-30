@@ -1,7 +1,8 @@
 export const color = {
-  violet: "#5646F8",
-  black:  "#000",
-  dark:   "hsl(0, 0%, 8%)"
+  violet:   "#5646F8",
+  black:    "#000",
+  dark:     "hsl(0, 0%, 8%)",
+  textDark: "#413f43"
 }
 
 export const boxShadow = {
