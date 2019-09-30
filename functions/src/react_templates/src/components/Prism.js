@@ -1,6 +1,7 @@
 import React from 'react';
 import Prism from 'prismjs';
 
+import '../misc/prism.css';
 import './Prism.scss';
 
 export default class PrismCode extends React.PureComponent {

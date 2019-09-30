@@ -108,45 +108,69 @@ exports.createImage = functions
 
     const q = req.body;
 
-    if (!q.id ) {
-      res.json({
-        success: false,
-        data: "Missing required parameter: id"
-      })
-    }
-
-    try {
-
-      const articleData = await strapi.getArticleById(q.id);
-      
-      const [ 
-        ogImage
-        , igPost
-        , igStory ] = await Promise.all([
-            generateImage("ogImage",        articleData)
-          , generateImage("instagramPost",  articleData)
-          , generateImage("instagramStory", articleData)
-        ]);
-
-      const jwt = await strapi.getJWT();
-      await strapi.updateOgGraphUrl(jwt, q.id, ogImage.data);
-
-      res.json({
-        success: true,
-        data: {
-          openGraph: ogImage.data,
-          instagram: {
-            story: igStory.data,
-            post: igPost.data
+    if (q.target === 'article') {
+      try {
+  
+        const articleData = await strapi.getArticleById(q.id);
+  
+        const [ 
+          ogImage
+          , igPost
+          , igStory ] = await Promise.all([
+              generateImage("ogImage",        articleData)
+            , generateImage("instagramPost",  articleData)
+          ]);
+  
+        const jwt = await strapi.getJWT();
+        await strapi.updateOgGraphUrl(jwt, q.id, ogImage.data);
+  
+        res.json({
+          success: true,
+          data: {
+            openGraph: ogImage.data,
+            instagram: {
+              story: igStory.data,
+              post: igPost.data
+            }
           }
-        }
-      })
-
-    } catch (err) {
-      res.json({
-        success: false,
-        data: err
-      })
+        })
+  
+      } catch (err) {
+        res.json({
+          success: false,
+          data: err
+        })
+      }
     }
+
+    if (q.target === 'snippet') {
+      try {
+  
+        const snippetData = await strapi.getSnippetById(q.id);
+  
+        const [ image_opengraph, image_instagram_post ] = await Promise.all([
+              generateSnippetImage("ogImage",        snippetData)
+            , generateSnippetImage("instagramPost",  snippetData)
+          ]);
+  
+        const jwt = await strapi.getJWT();
+        await strapi.updateStrapiSnippet(jwt, q.id, { image_instagram_post, image_opengraph });
+  
+        res.json({
+          success: true,
+          data: {
+            image_opengraph,
+            image_instagram_post
+          }
+        })
+  
+      } catch (err) {
+        res.json({
+          success: false,
+          data: err
+        })
+      }
+    }
+
 
   });

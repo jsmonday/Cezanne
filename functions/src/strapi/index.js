@@ -40,6 +40,21 @@ async function getArticleById(id) {
   }
 }
 
+async function getSnippetById(id) {
+  try {
+
+    const { data } = await axios.get(`${endpoint}/snippets/${id}`);
+
+    return {
+      id,
+      code: data.code
+    }
+
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 async function updateOgGraphUrl(jwt, id, og_image_url) {
   try {
 
@@ -65,8 +80,28 @@ async function updateOgGraphUrl(jwt, id, og_image_url) {
   }
 }
 
+async function updateStrapiSnippet(jwt, id, data) {
+  try {
+
+    await axios({
+      method: "put",
+      url: `${endpoint}/snippets/${id}`,
+      headers: { Authorization: `Bearer ${jwt}` },
+      data: { data }
+    });
+
+    console.log(`Snippet ${id} successfully updated`);
+
+  } catch (err) {
+    console.log("Unable to update snippet " + id);
+    console.log(err);
+  }
+}
+
 module.exports = {
   getJWT,
   getArticleById,
-  updateOgGraphUrl
+  updateOgGraphUrl,
+  updateStrapiSnippet,
+  getSnippetById
 }

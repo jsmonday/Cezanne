@@ -3,7 +3,6 @@ import Prism          from '../components/Prism';
 import AuthorBox      from '../components/AuthorBox';
 import * as OpenGraph from '../styled/OpenGraph';
 import * as Typo      from '../styled/Typography';
-import * as Unicorn   from '../components/UnicornLogo';
 
 import './OpenGraph.scss';
 
