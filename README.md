@@ -5,24 +5,20 @@
 </a>
 <br />
 
-SIGF is a simple and powerful service that uses **Puppeteer** in order to generate the OpenGraph image for every JSMonday article. <br />
+**C E Z A N N E** is a simple and powerful service that uses **Puppeteer** in order to generate the OpenGraph image for every JSMonday article. <br />
 It's build to work on **Google Cloud Functions**, whose Linux distribution is way better than AWS one (and that solves a lot of common problems).
 
 # Supported Image Formats
 
 At the moment, SIGF supports the following image formats:
 
-- Instagram Story
-- Instagram Image
-- OpenGraph Image
+- Instagram Image (1080px * 1080px)
+- OpenGraph Image (1920px * 1080px)
 
 # Parameters
 
-- Title
-- Description
-- Image
-- Template
-- Number (optional)
+- template
+- template
 
 # Example Call
 
@@ -30,10 +26,8 @@ At the moment, SIGF supports the following image formats:
 
 ```json
 {
-  "title": "My Awesome Title",
-  "description": "Here it is the description",
-  "image": "https://url/to/image",
-  "template": "all"
+  "id": 1,
+  "template": "snippet"
 }
 ```
 
@@ -41,14 +35,8 @@ At the moment, SIGF supports the following image formats:
 
 ```json
 {
-  "success": "true",
-  "data": {
-    "openGraph": "image-link",
-    "instagram": {
-      "story": "image-link",
-      "post": "image-link"
-    }
-  }
+  "opengraph": "<url>",
+  "instagram": "<url>"
 }
 ```
 
