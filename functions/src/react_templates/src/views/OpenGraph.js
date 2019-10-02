@@ -1,3 +1,4 @@
+import qs             from 'qs';
 import React          from 'react';
 import Prism          from '../components/Prism';
 import AuthorBox      from '../components/AuthorBox';
@@ -28,12 +29,13 @@ class Article extends React.PureComponent {
   }
 
   componentDidMount() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const bgImage   = urlParams.get('bgImage');
-    const title     = urlParams.get('title');
-    const author    = urlParams.get('author');
-    const role      = urlParams.get('role');
-    const authorImg = urlParams.get('authorImg');
+    const urlParams = qs.parse(window.location.href.match(/\?.+/)[0].replace(/\?/, ''));
+
+    const bgImage   = urlParams.bgImage;
+    const title     = urlParams.title;
+    const author    = urlParams.author;
+    const role      = urlParams.role;
+    const authorImg = urlParams.authorImg;
 
     this.setState({
       bgImage:   atob(bgImage),

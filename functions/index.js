@@ -1,41 +1,41 @@
-const stream    = require("stream");
-const puppeteer = require("puppeteer");
-const functions = require('firebase-functions');
-const uuidv4    = require('uuid/v4');
-const firebase  = require("./src/firebase/storage");
-const strapi    = require("./src/strapi");
-                  require("dotenv").config();
+const stream      = require("stream");
+const puppeteer   = require("puppeteer");
+const functions   = require('firebase-functions');
+const uuidv4      = require('uuid/v4');
+const firebase    = require("./src/firebase/storage");
+const strapi      = require("./src/strapi");
+                    require("dotenv").config();
 
-function uploadImage(id, template, target, buffer) {
+function uploadImage({ id, template, target, buffer }) {
 
-  let fileName;
+  return new Promise(async (resolve, reject) => {
 
-  let collection = () => {
-    if (target === 'instagram') {
-      if (template === 'snippet') return { fileName: 'instagramPost', collection: 'snippets' };
-      if (template === 'article') return { fileName: 'instagramPost', collection: 'articles' };
+    const collection = () => {
+      return new Promise((resolve) => {
+        if (template === 'instagram') {
+          if (target === 'snippet') resolve({ fileName: 'instagramPost', collection: 'snippets' });
+          if (target === 'article') resolve({ fileName: 'instagramPost', collection: 'articles' });
+        }
+    
+        else if (template === 'opengraph') {
+          if (target === 'snippet') resolve({ fileName: 'ogImage', collection: 'snippets' });
+          if (target === 'article') resolve({ fileName: 'ogImage', collection: 'articles' });
+        }
+      })
     }
 
-    else if (target === 'opengraph') {
-      if (template === 'snippet') return { fileName: 'ogImage', collection: 'snippets' };
-      if (template === 'article') return { fileName: 'ogImage', collection: 'articles' };
-    }
-
-  }
-
-  return new Promise((resolve, reject) => {
-
-    const bufferStream = new stream.PassThrough();
-    const uuid = uuidv4();
+    const bufferStream       = new stream.PassThrough();
+    const uuid               = uuidv4();
+    const computedCollection = await collection();
 
     bufferStream.end(buffer);
 
-    const bucket = firebase.storage().bucket();
-    const file = bucket.file(`/${collection().collection}/${id}/cezanne/${collection().fileName}.jpg`);
+    const bucket  = firebase.storage().bucket();
+    const file    = bucket.file(`/${computedCollection.collection}/${id}/cezanne/${computedCollection.fileName}.png`);
 
     const options = {
-      destination: `/${collection().collection}/${id}/cezanne/${collection().fileName}.jpg`,
-      contentType: 'image/jpg',
+      destination: `/${computedCollection.collection}/${id}/cezanne/${computedCollection.fileName}.png`,
+      contentType: 'image/png',
       metadata: {
         metadata: {
           firebaseStorageDownloadTokens: uuid,
@@ -46,8 +46,9 @@ function uploadImage(id, template, target, buffer) {
     bufferStream
       .pipe(file.createWriteStream(options))
       .on('error', (error) => reject(error))
-      .on('finish', () => {
-        const downloadUrl = `${process.env.IMAGE_BASEURL}${articleId}%2Fcezanne%2F${imageName}.jpg?alt=media&token=${uuid}`
+      .on('finish', async () => {
+        const downloadPath = encodeURIComponent(`${computedCollection.collection}/${id}/cezanne/${computedCollection.fileName}.png`);
+        const downloadUrl  = `${process.env.IMAGE_BASEURL}/${downloadPath}?alt=media&token=${uuid}`
         resolve(downloadUrl);
       });
 
@@ -55,41 +56,63 @@ function uploadImage(id, template, target, buffer) {
 }
 
 function b64(str) {
-  const buff = new Buffer(str);
+  const buff = Buffer.from(str);
   return buff.toString('base64');
 }
 
-function computeTemplate(template, target) {
-  let path = [ template ];
+function computeTemplate({ template, target }) {
+  return new Promise((resolve) => {
 
-  if (target === 'insagram') {
-    path.push('post');
-    path.push(target);
-  }
+    if (template === 'instagram') {
+      resolve(`instagram/post/${target}`);
+    }
 
-  else if (target === 'opengraph') {
-    path.push(target);
-  }
+    else if (template === 'opengraph') {
+      resolve(`opengraph/${target}`);
+    }
 
-  return path.join("/");
+  })
 }
 
-function computeViewPort(target) {
-  if (target === 'opengraph') {
-    return { width: 1920, height: 1080 };
-  }
-
-  if (target === 'instagram') {
-    return { width: 1080, height: 1080 };
-  }
+function computeViewPort({template}) {
+  return new Promise((resolve) => {
+    if (template === 'opengraph') {
+      resolve({ width: 1920, height: 1080 });
+    }
+  
+    if (template === 'instagram') {
+      resolve({ width: 1080, height: 1080 });
+    }
+  })
 }
 
-function generateImage(template, target, data, params) {
+function computeQueryString({target, template, data}) {
+  return new Promise((resolve) => {
+    let qs;
+
+    if (template === 'instagram') {
+      if (target === 'snippet') qs = `code=${data.code}&lang=${data.lang}`;
+      if (target === 'article') qs = `title=${data.title}&bgImage=${data.image}`;
+    }
+
+    else if (template === 'opengraph') {
+      if (target === 'snippet') qs = `code=${data.code}&lang=${data.lang}`;
+      if (target === 'article') qs = `title=${data.title}&bgImage=${data.image}&author=${data.author.name}&authorImg=${data.author.img}&role=${data.author.role}`;
+    }
+
+    resolve(qs);
+  });
+}
+
+function generateImage({ template, target, data, params }) {
   return new Promise(async (resolve, reject) => {
 
-    const viewPort = computeViewPort(target);
-    const path     = computeTemplate(template, target);
-    const browser  = await puppeteer.launch({
+    const viewPort   = await computeViewPort({template});
+    const path       = await computeTemplate({template, target});
+    const qs         = await computeQueryString({target, template, data});
+    const remotePath = `${process.env.CEZANNE_PATH}/#/${path}?${qs}`;
+    console.log(`SCREENSHOT PATH`, remotePath);
+    const browser    = await puppeteer.launch({
       args: [
         '--disable-gpu',
         '--disable-dev-shm-usage',
@@ -100,84 +123,89 @@ function generateImage(template, target, data, params) {
         '--single-process'
       ]
     });
+
     const page = await browser.newPage();
 
-    let qs;
-
-    if (target === 'instagram') {
-      if (template === 'snippet') qs = `?code=${data.code}&lang=${data.lang}`;
-      if (template === 'article') qs = `?title=${data.title}&bgImage=${data.image}`;
-    }
-
-    else if (target === 'opengraph') {
-      if (template === 'snippet') qs = `?code=${data.code}&lang=${data.lang}`;
-      if (template === 'article') qs = `?title=${data.title}&bgImage=${data.image}&author=${data.author.name}&authorImg=${data.author.img}`;
-    }
-
-    const fullPath = `file://${__dirname}/src/react_templates/build/index.html/#/${path}${qs}`;
-
-    console.log(`Rendering ${fullPath}`);
-
-    await page.goto(fullPath);
+    await page.goto(remotePath);
     await page.setViewport(viewPort);
 
     const renderedImage = await page.screenshot();
     await browser.close();
 
-    const imageUrl = await uploadImage(data.id, template, target, renderedImage);
+    const imageUrl = await uploadImage({ id: data.id, template, target, buffer: renderedImage });
 
-    resolve({
-      success: true,
-      data: imageUrl
-    });
+    resolve(imageUrl);
 
   });
+}
+
+function getItemData(target, params) {
+  return new Promise(async (resolve) => {
+    if (target === 'article') {
+
+      let remote = await strapi.getArticleById(params.id);
+
+      resolve({
+        id:          remote.id,
+        title:       b64(remote.title),
+        description: b64(remote.description),
+        image:       b64(remote.image),
+        author: {
+          name:      b64(remote.author.name),
+          desc:      b64(remote.author.desc),
+          img:       b64(remote.author.img),
+          role:      b64(remote.author.role)
+        }
+      })
+    }
+
+    else if (target === 'snippet') {
+
+      let remote = await strapi.getSnippetById(params.id);
+
+      resolve({
+        id:   remote.id,
+        code: b64(remote.code),
+        lang: remote.lang
+      })
+    }
+  })
 }
 
 async function getImages(params, target) {
 
   return new Promise(async (resolve, reject) => {
   
-    let data;
+    const data  = await getItemData(target, params);
+    const ogUrl = await generateImage({template: 'opengraph', target, data, params});
+    const igUrl = await generateImage({template: 'instagram', target, data, params})
+
+    if (target === 'snippet') {
+      await strapi.updateStrapiSnippet({ 
+        id: data.id, 
+        data: {
+          image_instagram_post: igUrl,
+          image_opengraph:      ogUrl
+      }})
+    }
 
     if (target === 'article') {
-
-      let remote = await strapi.getArticleById(params.id);
-
-      data = {
-        id:          remote.id,
-        title:       b64(remote.title),
-        description: b64(remote.description),
-        image:       b64(remote.image),
-        author: {
-          name: b64(remote.author.name),
-          desc: b64(remote.author.desc),
-          img:  b64(remote.author.img)
-        }
-      }
+      await strapi.updateStrapiArticle({ 
+        id: data.id, 
+        data: {
+          og_image_url: ogUrl
+      }})
     }
 
-    else if (target === 'snippet') {
-      let remote = await strapi.getSnippetById(params.id);
-
-      data = {
-        id:   remote.id,
-        code: b64(remote.code),
-        lang: remote.lang
-      }
-    }
-
-    const [ opengraph, instagram ] = await Promise.all[ 
-      generateImage('opengraph', target, data, params), 
-      generateImage('instagram', target, data, params)
-    ];
-
-    resolve([ opengraph, instagram ]);
+    resolve({ 
+      opengraph: ogUrl,
+      instagram: igUrl
+    });
 
   });
 }
 
-exports.createImages = functions
+exports.cezanne = functions
   .runWith({ memory: '1GB', timeoutSeconds: 120 })
   .https
   .onRequest(async (req, res) => {
@@ -185,7 +213,7 @@ exports.createImages = functions
     const q      = req.body;
     const target = q.target;
 
-    const [ opengraph, instagram ] = await getImages(q, target);
+    const { opengraph, instagram } = await getImages(q, target);
 
-    res.json([ opengraph, instagram ]);
+    res.json({ opengraph, instagram });
   });

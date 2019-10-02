@@ -6,7 +6,7 @@
     "serve": "firebase serve --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "sh ./build-react.sh && firebase deploy --only functions",
+    "deploy": "firebase deploy",
     "logs": "firebase functions:log",
     "devserver": "nodemon ./src/devserver.js",
     "local": "firebase emulators:start"

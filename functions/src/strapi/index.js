@@ -31,7 +31,8 @@ async function getArticleById(id) {
       author:      {
         name: data.author.full_name,
         desc: data.author.role,
-        img:  data.author.profile_image_url
+        img:  data.author.profile_image_url,
+        role: data.author.role
       }
     }
 
@@ -56,21 +57,16 @@ async function getSnippetById(id) {
   }
 }
 
-async function updateOgGraphUrl(jwt, id, og_image_url) {
+async function updateStrapiArticle({ id, data }) {
   try {
 
-    console.log(JSON.stringify({
-      method: "put",
-      url: `${endpoint}/articles/${id}`,
-      headers: { Authorization: `Bearer ${jwt}` },
-      data: { og_image_url }
-    }, null, 2))
+    const jwt = await getJWT();
 
     await axios({
       method: "put",
       url: `${endpoint}/articles/${id}`,
       headers: { Authorization: `Bearer ${jwt}` },
-      data: { og_image_url }
+      data,
     });
 
     console.log(`Article ${id} successfully updated`);
@@ -81,14 +77,16 @@ async function updateOgGraphUrl(jwt, id, og_image_url) {
   }
 }
 
-async function updateStrapiSnippet(jwt, id, data) {
+async function updateStrapiSnippet({ id, data }) {
   try {
+
+    const jwt = await getJWT();
 
     await axios({
       method: "put",
       url: `${endpoint}/snippets/${id}`,
       headers: { Authorization: `Bearer ${jwt}` },
-      data: { data }
+      data
     });
 
     console.log(`Snippet ${id} successfully updated`);
@@ -102,7 +100,7 @@ async function updateStrapiSnippet(jwt, id, data) {
 module.exports = {
   getJWT,
   getArticleById,
-  updateOgGraphUrl,
+  updateStrapiArticle,
   updateStrapiSnippet,
   getSnippetById
 }

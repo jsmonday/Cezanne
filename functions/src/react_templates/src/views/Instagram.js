@@ -1,4 +1,5 @@
 import React        from 'react';
+import qs           from 'qs';
 import Instagram    from '../styled/Instagram';
 import Browser      from '../styled/Browser';
 import * as Typo    from '../styled/Typography';
@@ -29,9 +30,9 @@ class Article extends React.PureComponent {
   }
 
   componentDidMount() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const bgImage   = urlParams.get('bgImage');
-    const title     = urlParams.get('title')
+    const urlParams = qs.parse(window.location.href.match(/\?.+/)[0].replace(/\?/, ''));
+    const bgImage   = urlParams.bgImage;
+    const title     = urlParams.title;
 
     this.setState({
       bgImage: atob(bgImage),
@@ -45,7 +46,7 @@ class Article extends React.PureComponent {
         <Instagram.InnerPost bgImage={this.state.bgImage} className="flex-bottom">
           <div style={{zIndex: 1}}>
             <Unicorn.White />
-            <Typo.Title>
+            <Typo.Title width="100%">
               { this.state.title }
             </Typo.Title>
           </div>

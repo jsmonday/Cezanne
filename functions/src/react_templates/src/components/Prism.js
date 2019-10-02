@@ -1,5 +1,6 @@
 import React from 'react';
 import Prism from 'prismjs';
+import qs    from 'qs';
 
 import '../misc/prism.css';
 import './Prism.scss';
@@ -18,13 +19,13 @@ export default class PrismCode extends React.PureComponent {
   componentDidMount() {
     Prism.highlightAll()
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const code     = urlParams.get('code');
-    const language = urlParams.get('lang')
+    const urlParams = qs.parse(window.location.href.match(/\?.+/)[0].replace(/\?/, ''));
+    const code      = urlParams.code;
+    const lang      = urlParams.lang.toLowerCase();
 
     this.setState({
       code: atob(code),
-      language
+      lang
     })
   }
 
