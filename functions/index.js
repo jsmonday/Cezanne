@@ -193,7 +193,8 @@ async function getImages(params, target) {
       await strapi.updateStrapiArticle({ 
         id: data.id, 
         data: {
-          og_image_url: ogUrl
+          og_image_url: ogUrl,
+          ig_image_url: igUrl
       }})
     }
 
