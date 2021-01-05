@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@google-cloud/storage": "3.0.2",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "dotenv": "^8.1.0",
     "firebase-admin": "8.2.0",
     "firebase-functions": "3.1.0",
