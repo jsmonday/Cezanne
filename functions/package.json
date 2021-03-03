@@ -20,7 +20,7 @@
     "dotenv": "^8.1.0",
     "firebase-admin": "8.2.0",
     "firebase-functions": "3.1.0",
-    "pug": "^2.0.4",
+    "pug": "^3.0.1",
     "puppeteer": "1.18.1",
     "strapi-sdk-javascript": "^0.3.1",
     "uuid": "^3.3.3"
