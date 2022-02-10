@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "history": "^4.10.1",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "prismjs": "^1.17.1",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
