@@ -28,7 +28,7 @@
   "devDependencies": {
     "eslint": "^5.12.0",
     "eslint-plugin-promise": "^4.0.1",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "firebase-functions-test": "^0.1.6",
     "nodemon": "^1.19.1"
   },
